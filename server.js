@@ -1,17 +1,23 @@
-// Read .env file manually
-const fs = require('fs');
-const envFile = fs.readFileSync('.env', 'utf8');
-envFile.split('\n').forEach(line => {
-  const [key, value] = line.split('=');
-  if (key && value) {
-    process.env[key.trim()] = value.trim();
-  }
-});
-
 const express = require('express');
 const mongoose = require('mongoose');
 const session = require('express-session');
 const path = require('path');
+
+// Load .env file only in development (not on Render)
+if (process.env.NODE_ENV !== 'production') {
+  const fs = require('fs');
+  try {
+    const envFile = fs.readFileSync('.env', 'utf8');
+    envFile.split('\n').forEach(line => {
+      const [key, value] = line.split('=');
+      if (key && value) {
+        process.env[key.trim()] = value.trim();
+      }
+    });
+  } catch (e) {
+    console.log('No .env file found');
+  }
+}
 
 const app = express();
 const PORT = process.env.PORT || 3000;
