@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Dashboard</title>
+  <link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+
+<nav class="navbar">
+  <a href="/">⚡ JobTrack</a>
+  <div>
+    <span>👋 <%= user.name %></span>
+    <a href="/jobs/add">+ Add Job</a>
+    <a href="/auth/logout">Logout</a>
+  </div>
+</nav>
+
+<div class="container">
+
+  <h1>My Dashboard</h1>
+
+  <!-- Stats -->
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-num"><%= stats.total %></div>
+      <div class="stat-label">Total Applied</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num"><%= stats.interview %></div>
+      <div class="stat-label">Interviews</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num"><%= stats.selected %></div>
+      <div class="stat-label">Selected</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num"><%= stats.rejected %></div>
+      <div class="stat-label">Rejected</div>
+    </div>
+  </div>
+
+  <!-- Filter Buttons -->
+  <div class="filter-bar">
+    <span class="filter-label">Filter by status:</span>
+    <a href="/jobs/dashboard"
+      class="filter-btn <%= statusFilter === '' ? 'active' : '' %>">
+      All
+    </a>
+    <a href="/jobs/dashboard?status=Applied"
+      class="filter-btn applied <%= statusFilter === 'Applied' ? 'active' : '' %>">
+      Applied
+    </a>
+    <a href="/jobs/dashboard?status=Interview"
+      class="filter-btn interview <%= statusFilter === 'Interview' ? 'active' : '' %>">
+      Interview
+    </a>
+    <a href="/jobs/dashboard?status=Selected"
+      class="filter-btn selected <%= statusFilter === 'Selected' ? 'active' : '' %>">
+      Selected
+    </a>
+    <a href="/jobs/dashboard?status=Rejected"
+      class="filter-btn rejected <%= statusFilter === 'Rejected' ? 'active' : '' %>">
+      Rejected
+    </a>
+  </div>
+
+  <!-- Jobs Table -->
+  <% if (jobs.length === 0) { %>
+    <div class="empty-state">
+      <h3>No applications found!</h3>
+      <p>
+        <% if (statusFilter) { %>
+          No jobs with status "<%= statusFilter %>". 
+          <a href="/jobs/dashboard">View all jobs</a>
+        <% } else { %>
+          Click "+ Add Job" to add your first application.
+          <a href="/jobs/add">+ Add Job</a>
+        <% } %>
+      </p>
+    </div>
+  <% } else { %>
+    <table class="jobs-table">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Company</th>
+          <th>Role</th>
+          <th>Status</th>
+          <th>Date</th>
+          <th>Notes</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% jobs.forEach((job, i) => { %>
+        <tr>
+          <td><%= i + 1 %></td>
+          <td><strong><%= job.company %></strong></td>
+          <td><%= job.role %></td>
+          <td>
+            <span class="badge badge-<%= job.status.toLowerCase() %>">
+              <%= job.status %>
+            </span>
+          </td>
+          <td><%= new Date(job.date).toLocaleDateString('en-IN') %></td>
+          <td><%= job.notes || '—' %></td>
+          <td class="action-btns">
+            <a href="/jobs/edit/<%= job._id %>" class="btn-edit">Edit</a>
+            <form action="/jobs/delete/<%= job._id %>" method="POST" style="display:inline">
+              <button type="submit"
+                class="btn-delete"
+                onclick="return confirm('Delete this job?')">
+                Delete
+              </button>
+            </form>
+          </td>
+        </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  <% } %>
+
+</div>
+</body>
+</html>
