@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const session = require('express-session');
 const path = require('path');
 
-// Load .env file only in development (not on Render)
+// Load .env only in development
 if (process.env.NODE_ENV !== 'production') {
   const fs = require('fs');
   try {
